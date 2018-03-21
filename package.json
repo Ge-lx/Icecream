@@ -1,0 +1,36 @@
+{
+  "name": "icecream",
+  "version": "0.0.1",
+  "main": "main.js",
+  "scripts": {
+    "build": "gulp build"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-runtime": "^6.26.0",
+    "express": "^4.16.3",
+    "express-vue": "^5.5.3",
+    "glob": "^7.1.2",
+    "gulp": "^3.9.1",
+    "pug": "^2.0.1",
+    "ws": "^5.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "del": "^3.0.0",
+    "eslint": "^4.19.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "eslint-plugin-vue": "^4.3.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-eslint": "^4.0.2",
+    "gulp-exclude-gitignore": "^1.2.0",
+    "gulp-sourcemaps": "^2.6.4"
+  }
+}
