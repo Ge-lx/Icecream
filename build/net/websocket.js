@@ -14,15 +14,14 @@ var _clientConnection2 = _interopRequireDefault(_clientConnection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var tokens = {}; // Token list { user: token, ...}
+var tokens = {}; // Token list { token: user, ...}
+var sesskeys = {}; // Session keys { user: {key: 'SDFLKJF', callback: () => ...} }
 var clients = {}; // Connected clients { user: Handler, ...}
 var wss = null; // WebSocket Server
 
 // Starts the websocket / sets up handlers
 var startServer = function startServer(server, cfg) {
   return new Promise(function (resolve, reject) {
-    console.log('Starting webSocket server...');
-
     wss = new _ws2.default.Server({ server: server });
 
     // Checks if the supplied token is in token list
@@ -31,13 +30,20 @@ var startServer = function startServer(server, cfg) {
       return spliturl.length > 2 && tokens.hasOwnProperty(spliturl[2]);
     };
 
-    wss.on('listening', resolve); // Resolve when server is ready
+    wss.on('listening', function () {
+      console.log('WebSocket listening...');
+      resolve();
+    }); // Resolve when server is ready
 
     // Valid connection, checked before. Handle connection, delete token
     wss.on('connection', function (socket, req) {
-      var token = req.url.split('/')[2];
+      var split = req.url.split('/');
+      var token = split[2];
       var user = tokens[token];
-      addClient(user, socket);
+      var sess = sesskeys[user];
+      if (sess && sess.key === split[3]) {
+        sess.onConnect(addClient(user, socket, sess));
+      } else addClient(user, socket);
       delete tokens[token];
     });
 
@@ -58,12 +64,19 @@ var stopServer = function stopServer() {
 // Generate new token. Called by clients thourgh dashbaord.js (http)
 var getClientToken = function getClientToken(user) {
   var token = _crypto2.default.randomBytes(32).toString('hex');
-  tokens[token] = user;
+  tokens[token] = user.id;
   return token;
 };
 
+// onConnect: (client) => {}, onClose: (client) => {}
+var getSessionKey = function getSessionKey(user, onMessage, onConnect, onClose) {
+  var key = _crypto2.default.randomBytes(16).toString('hex');
+  sesskeys[user.id] = { key: key, onMessage: onMessage, onConnect: onConnect, onClose: onClose };
+  return key;
+};
+
 // Called when new client connects
-var addClient = function addClient(user, socket) {
+var addClient = function addClient(user, socket, sess) {
   // One connection per client.
   if (clients.hasOwnProperty(user)) {
     console.log('Duplicate connection from ' + user + '. Dropping old one.');
@@ -74,10 +87,14 @@ var addClient = function addClient(user, socket) {
 
   var client = new _clientConnection2.default(user, socket, function () {
     // This is the onClose function
+    if (sess.onClose) sess.onClose();
     console.log(user + ' disconnected.');
     delete clients[user];
   });
+
+  client.external(sess.onMessage, sess.onClose);
   clients[user] = client; // Save client
+  return client;
 };
 
 // Sends a message to all clients
@@ -103,6 +120,7 @@ module.exports = {
   startServer: startServer,
   stopServer: stopServer,
   getClientToken: getClientToken,
+  getSessionKey: getSessionKey,
   getClientList: getClientList,
   isConnected: isConnected,
   broadcast: broadcast,

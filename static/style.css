@@ -2,8 +2,21 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Calibri", sans-serif;
+  height: 100%;
+  background-color: #F1F1F1;
+}
+
+body > div {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
 }
 
 p {
   margin: 0.2em;
+}
+
+h2, h4 {
+  margin: 0.3em;
 }

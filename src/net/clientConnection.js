@@ -8,6 +8,16 @@ class ClientConnection {
     socket.on('error', this.onError.bind(this))
   }
 
+  external (onMessage, onError) {
+    this.exMessage = onMessage
+    this.exError = onError
+  }
+
+  // Send a message
+  sendMessage (json) {
+    this.socket.send(JSON.stringify(json))
+  }
+
   // Returns an answer-function. This preserves the response-token
   getAnswerFunction (json) {
     var answer = (payload) => {
@@ -29,6 +39,8 @@ class ClientConnection {
     switch (json.action) {
       // Handle all the shit
     }
+
+    if (this.exMessage) this.exMessage(json)
   }
 
   close () {
@@ -36,7 +48,8 @@ class ClientConnection {
   }
 
   onError (error) {
-    console.err(this.user + ': ' + error)
+    if (this.exError) this.exError(error)
+    else console.err(this.user + ': ' + error)
   }
 }
 

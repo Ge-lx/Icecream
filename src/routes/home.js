@@ -1,18 +1,17 @@
 import websocket from '../net/websocket'
-import crypto from 'crypto'
 
 export default (router) => {
-  router.get('/', (req, res, next) => {
-    var user = crypto.randomBytes(8).toString('hex').toUpperCase()
+  router.get('/home', (req, res) => {
     const data = {
-      random: user,
-      token: websocket.getClientToken(user)
+      user: req.user,
+      session: req.session,
+      ws_users: Object.keys(websocket.getClientList())
     }
 
     req.vueOptions = {
       head: {
-        title: 'Page Title',
-        scripts: [{src: 'static/ws-client.js'}]
+        title: 'Icecream',
+        scripts: [{src: 'https://unpkg.com/axios/dist/axios.min.js'}]
       }
     }
 

@@ -20,10 +20,24 @@ var ClientConnection = function () {
     socket.on('error', this.onError.bind(this));
   }
 
-  // Returns an answer-function. This preserves the response-token
-
-
   _createClass(ClientConnection, [{
+    key: 'external',
+    value: function external(onMessage, onError) {
+      this.exMessage = onMessage;
+      this.exError = onError;
+    }
+
+    // Send a message
+
+  }, {
+    key: 'sendMessage',
+    value: function sendMessage(json) {
+      this.socket.send(JSON.stringify(json));
+    }
+
+    // Returns an answer-function. This preserves the response-token
+
+  }, {
     key: 'getAnswerFunction',
     value: function getAnswerFunction(json) {
       var _this = this;
@@ -46,6 +60,8 @@ var ClientConnection = function () {
       console.log(this.user + ': ' + JSON.stringify(json));
 
       switch (json.action) {}
+
+      if (this.exMessage) this.exMessage(json);
     }
   }, {
     key: 'close',
@@ -55,7 +71,7 @@ var ClientConnection = function () {
   }, {
     key: 'onError',
     value: function onError(error) {
-      console.err(this.user + ': ' + error);
+      if (this.exError) this.exError(error);else console.err(this.user + ': ' + error);
     }
   }]);
 

@@ -1,26 +1,23 @@
 <template lang='pug'>
 div
-  headComponent
-  div
-    p otherData
-    p something
+  headComponent(:user='user')
+  floatMiddle(title='Icecream')
+    pre(v-if='user') User: {{JSON.stringify(user, null, 2)}} 
+    pre Session: {{JSON.stringify(session, null, 2)}}
+    pre WS Connections: {{JSON.stringify(ws_users, null, 2)}} 
 </template>
 
 <script>
-import headComponent from './head.vue'
-import websocket from '../mixins/websocket'
+import headComponent from '../components/head.vue'
+import floatMiddle from '../components/floatMiddle.vue'
 
 export default {
   name: 'home',
-  mixins: [websocket],
-  components: {headComponent},
+  components: {headComponent, floatMiddle},
   data () {
     return {
       something: 'Hello, world!'
     }
-  },
-  mounted () {
-    this.establishConnection(this.random, 'ws://localhost:8080/ws/' + this.token)
   }
 }
 </script>

@@ -40,7 +40,7 @@ class Client {
 
   onMessage (message) {
     try {
-      var json = JSON.parse(message)
+      var json = JSON.parse(message.data)
     } catch (e) {
       this.onError('Received invalid message: ' + e)
     }

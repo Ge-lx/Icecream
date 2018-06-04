@@ -8,24 +8,20 @@ var _websocket = require('../net/websocket');
 
 var _websocket2 = _interopRequireDefault(_websocket);
 
-var _crypto = require('crypto');
-
-var _crypto2 = _interopRequireDefault(_crypto);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function (router) {
-  router.get('/', function (req, res, next) {
-    var user = _crypto2.default.randomBytes(8).toString('hex').toUpperCase();
+  router.get('/home', function (req, res) {
     var data = {
-      random: user,
-      token: _websocket2.default.getClientToken(user)
+      user: req.user,
+      session: req.session,
+      ws_users: Object.keys(_websocket2.default.getClientList())
     };
 
     req.vueOptions = {
       head: {
-        title: 'Page Title',
-        scripts: [{ src: 'static/ws-client.js' }]
+        title: 'Icecream',
+        scripts: [{ src: 'https://unpkg.com/axios/dist/axios.min.js' }]
       }
     };
 
